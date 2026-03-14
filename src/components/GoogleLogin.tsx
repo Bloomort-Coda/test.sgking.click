@@ -44,16 +44,37 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, onError }) => {
       }
     };
 
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleCredentialResponse,
-      });
+    const initializeGoogle = () => {
+      if (window.google && clientId) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredentialResponse,
+        });
 
-      window.google.accounts.id.renderButton(
-        googleButtonRef.current,
-        { theme: 'outline', size: 'large', text: 'signin_with' }
-      );
+        window.google.accounts.id.renderButton(
+          googleButtonRef.current,
+          { theme: 'outline', size: 'large', text: 'signin_with' }
+        );
+      }
+    };
+
+    // Try to initialize immediately
+    if (window.google) {
+      initializeGoogle();
+    } else {
+      // If not loaded yet, check every 500ms for up to 5 seconds
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (window.google) {
+          initializeGoogle();
+          clearInterval(interval);
+        } else if (attempts > 10) {
+          clearInterval(interval);
+          console.error('Google Identity Services script failed to load');
+        }
+      }, 500);
+      return () => clearInterval(interval);
     }
   }, [onSuccess, onError]);
 
