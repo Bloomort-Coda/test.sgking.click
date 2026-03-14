@@ -23,4 +23,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: domains/test.sgking.click/public_html/
+          server-dir: domains/test1.sgking.click/public_html/
