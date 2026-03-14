@@ -1,20 +1,20 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# React App Deployment to Hostinger
 
-# Run and deploy your AI Studio app
+This project is configured to automatically deploy to `test1.sgking.click` via GitHub Actions.
 
-This contains everything you need to run your app locally.
+## Deployment Setup
 
-View your app in AI Studio: https://ai.studio/apps/bc6ec824-2417-4ac1-8ff7-4c56e586b8fb
+1.  **GitHub Secrets:** Ensure the following secrets are added to your GitHub repository:
+    *   `FTP_SERVER`
+    *   `FTP_USERNAME`
+    *   `FTP_PASSWORD`
 
-## Run Locally
+2.  **Workflow:** The deployment is handled by `.github/workflows/deploy.yml`.
+3.  **Routing:** The `.htaccess` file in the `public` folder handles React SPA routing on Hostinger.
 
-**Prerequisites:**  Node.js
+## Local Development
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev
+```
