@@ -32,8 +32,8 @@ export default function App() {
                 { step: "03", title: "Automated Build", desc: "GitHub Actions triggers a build process to prepare the site for production." },
                 { step: "04", title: "FTP Deployment", desc: "The final files are securely transferred to Hostinger servers." }
               ].map((item, i) => (
-                <div key={i} className="flex gap-6 p-6 bg-white rounded-2xl border border-zinc-100 shadow-sm">
-                  <span className="text-4xl font-black text-emerald-100">{item.step}</span>
+                <div key={i} className="flex gap-6 p-6 bg-white/90 backdrop-blur-sm rounded-2xl border border-zinc-200 shadow-md">
+                  <span className="text-4xl font-black text-emerald-300/50">{item.step}</span>
                   <div>
                     <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                     <p className="text-zinc-600">{item.desc}</p>
@@ -54,7 +54,7 @@ export default function App() {
               <h2 className="text-4xl font-bold mb-4">About DevLab</h2>
               <p className="text-zinc-600">A learning project focused on modern web workflows.</p>
             </div>
-            <div className="prose prose-zinc bg-white p-8 rounded-3xl border border-zinc-100 shadow-sm">
+            <div className="prose prose-zinc bg-white/90 backdrop-blur-sm p-8 rounded-3xl border border-zinc-200 shadow-md">
               <p>
                 DevLab was created as a testing ground for full-stack web development workflows. 
                 Our goal is to master the tools that power the modern web, from frontend frameworks 
@@ -92,20 +92,20 @@ export default function App() {
                 {
                   title: "1. Build",
                   desc: "Create a simple website using modern JavaScript and React.",
-                  icon: <Code2 className="text-emerald-500" size={32} />,
-                  color: "bg-emerald-50"
+                  icon: <Code2 className="text-emerald-600" size={32} />,
+                  color: "bg-emerald-100"
                 },
                 {
                   title: "2. Push",
                   desc: "Upload the code to a GitHub repository for version control.",
-                  icon: <Github className="text-blue-500" size={32} />,
-                  color: "bg-blue-50"
+                  icon: <Github className="text-blue-600" size={32} />,
+                  color: "bg-blue-100"
                 },
                 {
                   title: "3. Deploy",
                   desc: "Connect the repository to a hosting service for live access.",
-                  icon: <Rocket className="text-purple-500" size={32} />,
-                  color: "bg-purple-50"
+                  icon: <Rocket className="text-purple-600" size={32} />,
+                  color: "bg-purple-100"
                 }
               ].map((step, i) => (
                 <motion.div
@@ -113,7 +113,7 @@ export default function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 + 0.3 }}
-                  className="p-8 rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+                  className="p-8 rounded-2xl border border-zinc-200 bg-white/90 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
                 >
                   <div className={`w-14 h-14 ${step.color} rounded-xl flex items-center justify-center mb-6`}>
                     {step.icon}
