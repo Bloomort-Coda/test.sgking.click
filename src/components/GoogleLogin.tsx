@@ -53,7 +53,12 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, onError }) => {
 
         window.google.accounts.id.renderButton(
           googleButtonRef.current,
-          { theme: 'outline', size: 'large', text: 'signin_with' }
+          { 
+            theme: 'filled_blue', 
+            size: 'large', 
+            type: 'icon', 
+            shape: 'circle' 
+          }
         );
       }
     };
@@ -78,7 +83,14 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, onError }) => {
     }
   }, [onSuccess, onError]);
 
-  return <div ref={googleButtonRef}></div>;
+  return (
+    <div className="group relative flex items-center justify-center w-10 h-10 hover:scale-105 transition-transform">
+      <div ref={googleButtonRef}></div>
+      <div className="absolute top-full mt-2 px-3 py-1.5 bg-zinc-900 text-white text-[10px] font-medium uppercase tracking-wider rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-2xl border border-white/10 translate-y-1 group-hover:translate-y-0">
+        Log in with Google
+      </div>
+    </div>
+  );
 };
 
 export default GoogleLogin;

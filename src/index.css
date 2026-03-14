@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    /* More pronounced gradient: Slate (blue-gray) to Emerald (green) */
-    @apply bg-fixed bg-gradient-to-br from-slate-200 via-white to-emerald-200/60;
+    /* Vertical gradient: Slate (blue-gray) to a darker Emerald (green) */
+    @apply bg-fixed bg-gradient-to-b from-slate-200 via-white to-emerald-400/40;
   }
 }

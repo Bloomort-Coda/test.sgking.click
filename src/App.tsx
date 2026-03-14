@@ -1,24 +1,58 @@
-import { motion } from "motion/react";
-import { Github, Globe, Rocket, Code2, LogOut, User } from "lucide-react";
-import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Github, Globe, Rocket, Code2, LogOut, User, Clock } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import GoogleLogin from "./components/GoogleLogin";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<"home" | "process" | "about">("home");
+  const [sessionExpired, setSessionExpired] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setUser(null);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+    let timeoutId: any;
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        handleLogout();
+        setSessionExpired(true);
+        // Auto-clear the message after 10 seconds
+        setTimeout(() => setSessionExpired(false), 10000);
+      }, TIMEOUT_MS);
+    };
+
+    // Initial start
+    resetTimer();
+
+    // Listen for activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    const handleActivity = () => resetTimer();
+    
+    events.forEach(event => document.addEventListener(event, handleActivity));
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      events.forEach(event => document.removeEventListener(event, handleActivity));
+    };
+  }, [user, handleLogout]);
 
   const renderContent = () => {
     switch (currentPage) {
       case "process":
         return (
           <motion.div 
+            key="process"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="space-y-12"
           >
             <div className="text-center">
@@ -46,8 +80,10 @@ export default function App() {
       case "about":
         return (
           <motion.div 
+            key="about"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="max-w-3xl mx-auto space-y-8"
           >
             <div className="text-center">
@@ -70,21 +106,21 @@ export default function App() {
         );
       default:
         return (
-          <>
+          <motion.div
+            key="home"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             {/* Hero Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-20"
-            >
+            <div className="text-center mb-20">
               <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
                 Simple Web Learning Project
               </h1>
               <p className="text-xl text-zinc-600 max-w-2xl mx-auto leading-relaxed">
                 Testing the workflow from local development to GitHub, and finally to production hosting.
               </p>
-            </motion.div>
+            </div>
 
             {/* Steps Grid */}
             <div className="grid md:grid-cols-3 gap-8 mb-20">
@@ -108,11 +144,8 @@ export default function App() {
                   color: "bg-purple-100"
                 }
               ].map((step, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 + 0.3 }}
                   className="p-8 rounded-2xl border border-zinc-200 bg-white/90 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
                 >
                   <div className={`w-14 h-14 ${step.color} rounded-xl flex items-center justify-center mb-6`}>
@@ -120,17 +153,12 @@ export default function App() {
                   </div>
                   <h3 className="text-xl font-bold mb-3">{step.title}</h3>
                   <p className="text-zinc-600 leading-relaxed">{step.desc}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
 
             {/* Status Card */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7 }}
-              className="bg-zinc-900 text-white p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8"
-            >
+            <div className="bg-zinc-900 text-white p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-left">
                 <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 justify-center md:justify-start">
                   <Globe size={24} className="text-emerald-400" />
@@ -141,8 +169,8 @@ export default function App() {
               <button className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-zinc-900 font-bold rounded-xl transition-all active:scale-95">
                 Test Redeploy
               </button>
-            </motion.div>
-          </>
+            </div>
+          </motion.div>
         );
     }
   };
@@ -160,25 +188,29 @@ export default function App() {
             <span>DevLab</span>
           </button>
           <div className="flex items-center gap-6">
-            <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-500">
-              <button 
-                onClick={() => setCurrentPage("home")}
-                className={`hover:text-emerald-600 transition-colors ${currentPage === 'home' ? 'text-emerald-600' : ''}`}
-              >
-                Home
-              </button>
-              <button 
-                onClick={() => setCurrentPage("process")}
-                className={`hover:text-emerald-600 transition-colors ${currentPage === 'process' ? 'text-emerald-600' : ''}`}
-              >
-                Process
-              </button>
-              <button 
-                onClick={() => setCurrentPage("about")}
-                className={`hover:text-emerald-600 transition-colors ${currentPage === 'about' ? 'text-emerald-600' : ''}`}
-              >
-                About
-              </button>
+            <div className="hidden md:flex items-center bg-zinc-100 p-1 rounded-xl border border-zinc-200">
+              {[
+                { id: "home", label: "Home" },
+                { id: "process", label: "Process" },
+                { id: "about", label: "About" }
+              ].map((page) => (
+                <button 
+                  key={page.id}
+                  onClick={() => setCurrentPage(page.id as any)}
+                  className={`relative px-4 py-1.5 text-sm font-medium transition-colors rounded-lg ${
+                    currentPage === page.id ? 'text-emerald-700' : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  {currentPage === page.id && (
+                    <motion.div 
+                      layoutId="nav-pill"
+                      className="absolute inset-0 bg-white shadow-sm border border-zinc-200 rounded-lg"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="relative z-10">{page.label}</span>
+                </button>
+              ))}
             </div>
             
             {user ? (
@@ -205,11 +237,30 @@ export default function App() {
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-20">
-        {error && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-            {error}
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {sessionExpired && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-8 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-sm flex items-center gap-3"
+            >
+              <Clock size={18} />
+              <span>Your session has expired due to 30 minutes of inactivity. Please log in again.</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {user && (
           <motion.div 
