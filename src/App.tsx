@@ -1,7 +1,17 @@
 import { motion } from "motion/react";
-import { Github, Globe, Rocket, Code2 } from "lucide-react";
+import { Github, Globe, Rocket, Code2, LogOut, User } from "lucide-react";
+import { useState } from "react";
+import GoogleLogin from "./components/GoogleLogin";
 
 export default function App() {
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    setUser(null);
+    // In a real app, you'd also clear the PHP session via an API call
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 selection:bg-emerald-100 selection:text-emerald-900">
       {/* Navigation */}
@@ -11,15 +21,58 @@ export default function App() {
             <Code2 size={24} />
             <span>DevLab</span>
           </div>
-          <div className="flex gap-6 text-sm font-medium text-zinc-500">
-            <a href="#" className="hover:text-emerald-600 transition-colors">Home</a>
-            <a href="#" className="hover:text-emerald-600 transition-colors">Process</a>
-            <a href="#" className="hover:text-emerald-600 transition-colors">About</a>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-500">
+              <a href="#" className="hover:text-emerald-600 transition-colors">Home</a>
+              <a href="#" className="hover:text-emerald-600 transition-colors">Process</a>
+              <a href="#" className="hover:text-emerald-600 transition-colors">About</a>
+            </div>
+            
+            {user ? (
+              <div className="flex items-center gap-3 pl-6 border-l border-zinc-200">
+                <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-zinc-200" referrerPolicy="no-referrer" />
+                <button 
+                  onClick={handleLogout}
+                  className="p-2 text-zinc-400 hover:text-red-500 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="pl-6 border-l border-zinc-200">
+                <GoogleLogin 
+                  onSuccess={(u) => { setUser(u); setError(null); }} 
+                  onError={(err) => setError(err)} 
+                />
+              </div>
+            )}
           </div>
         </div>
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-20">
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+            {error}
+          </div>
+        )}
+
+        {user && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 p-6 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-4"
+          >
+            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white">
+              <User size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-emerald-900 text-lg">Welcome back, {user.name}!</h3>
+              <p className="text-emerald-700 text-sm">You are successfully logged in via Google.</p>
+            </div>
+          </motion.div>
+        )}
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
